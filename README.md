@@ -25,8 +25,11 @@ QR payloads never leave the machine. Shortening has to ask a public cutter — t
 
 The site is plain HTML/CSS/JS at the repo root (plus `.nojekyll`).
 
-Your repo is already set to **Deploy from a branch → `main` → `/(root)`**.  
-Every push to `main` publishes by itself. No extra branch, no extra button.
+Your repo can publish in two ways (keep one):
+
+1. **GitHub Actions** (recommended here) — this repo has `.github/workflows/pages.yml`.  
+   Settings → Pages → Source: **GitHub Actions**. Every push to `main` goes live.
+2. **Deploy from a branch** → `main` → `/(root)` — also auto-publishes, but some API pushes skip that builder.
 
 Live: `https://claude-projects.github.io/devistic-utility-url-n-qr/`
 
