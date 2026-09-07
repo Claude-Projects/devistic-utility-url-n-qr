@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Devistic — opening the cut</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    :root { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #eadfcb;
+      color: #1c1612;
+      font: 18px/1.45 Georgia, "Times New Roman", serif;
+      padding: 24px;
+    }
+    .card {
+      max-width: 28rem;
+      background: #faf4e8;
+      border: 1px solid #1c1612;
+      padding: 1.5rem 1.6rem 1.35rem;
+      box-shadow: 6px 6px 0 #24382f;
+    }
+    h1 { font-size: 1.35rem; margin: 0 0 .6rem; }
+    p { margin: 0 0 1rem; }
+    a { color: #c44536; }
+    .muted { color: #5c5348; font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <main class="card" id="panel">
+    <h1>Looking up the stamp…</h1>
+    <p class="muted">If this hangs, the slip may be torn. Head back to the counter.</p>
+    <p><a href="./">← Devistic Counter</a></p>
+  </main>
+  <script>
+    (function () {
+      var BLOCK = /^(javascript|data|vbscript|file):/i;
+
+      function decodePayload(raw) {
+        if (!raw) return "";
+        raw = raw.replace(/^#/, "").replace(/^\?/, "");
+        if (raw.indexOf("u=") === 0) raw = raw.slice(2);
+        try { raw = decodeURIComponent(raw); } catch (e) {}
+        var b64 = raw.replace(/-/g, "+").replace(/_/g, "/");
+        while (b64.length % 4) b64 += "=";
+        try {
+          var bin = atob(b64);
+          var bytes = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          return new TextDecoder().decode(bytes);
+        } catch (e) {
+          try { return decodeURIComponent(raw); } catch (e2) { return raw; }
+        }
+      }
+
+      var hash = location.hash || "";
+      var query = location.search || "";
+      var dest = decodePayload(hash) || decodePayload(query);
+
+      var panel = document.getElementById("panel");
+      if (!dest || BLOCK.test(dest)) {
+        panel.innerHTML = "<h1>This slip is blank.</h1><p>No safe destination on this ticket.</p><p><a href='./'>← Back to the counter</a></p>";
+        return;
+      }
+      if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)) dest = "https://" + dest;
+      panel.innerHTML = "<h1>Sending you through.</h1><p>If nothing happens, open it yourself:</p><p><a id='out' rel='noopener noreferrer'></a></p>";
+      var a = document.getElementById("out");
+      a.href = dest;
+      a.textContent = dest;
+      location.replace(dest);
+    })();
+  </script>
+</body>
+</html>
