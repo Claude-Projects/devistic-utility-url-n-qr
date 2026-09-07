@@ -222,6 +222,47 @@ a:hover { color: var(--stamp-2); }
   letter-spacing: 0.04em;
 }
 
+.lang-switch {
+  display: flex;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.lang-switch .lang-btn {
+  border: 0;
+  border-inline-end: 1px solid var(--ink);
+  min-height: 42px;
+  border-radius: 0;
+}
+
+.lang-switch .lang-btn:last-child { border-inline-end: 0; }
+
+.lang-switch .lang-btn[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+html[data-lang="ur"] body,
+html[data-lang="ur"] .lede,
+html[data-lang="ur"] .brand-name span {
+  font-family: "Noto Naskh Arabic", var(--font-ui);
+}
+
+html[data-lang="ur"] .brand-name {
+  font-family: "Noto Naskh Arabic", var(--font-sign);
+}
+
+html[dir="rtl"] .hours { transform: rotate(-1.4deg); }
+html[dir="rtl"] .slip { transform: rotate(-1.1deg); }
+html[dir="rtl"] .brand-mark { transform: rotate(6deg); }
+
+.scan-preview {
+  display: block;
+  max-width: min(100%, 220px);
+  margin: 12px 0 0;
+  border: 1px dashed var(--rule);
+}
+
 .lede {
   max-width: 38rem;
   margin: 18px 0 0;

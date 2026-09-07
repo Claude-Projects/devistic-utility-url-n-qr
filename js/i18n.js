@@ -1,7 +1,7 @@
 window.I18N = {
   en: {
     langName: "EN",
-    otherLang: "हिन्दी",
+    pageTitle: "Devistic Counter — cut URLs, stamp QR codes",
     shopKicker: "Neighborhood counter",
     title: "Devistic",
     hours: "Open always · No token · No OTP",
@@ -92,9 +92,13 @@ window.I18N = {
     scan: {
       camera: "Open camera",
       stop: "Close camera",
+      paste: "Paste QR",
+      pasteHint: "Copy a QR picture, then press Ctrl+V / ⌘V anywhere on this desk — no need to hunt for a file.",
+      pasted: "Read from the clipboard.",
+      noImage: "No picture on the clipboard. Copy the QR image, then paste.",
       file: "Or drop / pick a photo of a QR",
       result: "What we read",
-      none: "No QR in that frame yet. Hold still, or try a flatter photo."
+      none: "No QR in that frame yet. Hold still, try a flatter photo, or paste the picture."
     },
     utm: {
       intro: "Tag a link the way analytics tools expect. Then cut it or stamp it so the ugly query string doesn’t sit on a poster.",
@@ -127,7 +131,7 @@ window.I18N = {
       q3: "Why a custom ending sometimes fails?",
       a3: "Popular words are already sitting on someone else’s slip. Try a longer ending, or leave it blank and we’ll pick a quiet one.",
       q4: "How do I put this on GitHub Pages?",
-      a4: "Repo Settings → Pages. Either “GitHub Actions” (this repo already has the workflow) or “Deploy from a branch” → main → / (root). The site is just HTML, CSS, and a couple of local scripts."
+      a4: "Settings → Pages → Deploy from a branch → main → / (root). Save once. After that, every push to main publishes the desk by itself. No extra branch, no extra button."
     },
     footer: "A little utility desk. Built to look like a counter, not a startup.",
     lamp: "Lamp",
@@ -135,7 +139,7 @@ window.I18N = {
   },
   hi: {
     langName: "हिन्दी",
-    otherLang: "EN",
+    pageTitle: "Devistic काउंटर — URL काटो, QR स्टैम्प",
     shopKicker: "मोहल्ले का काउंटर",
     title: "Devistic",
     hours: "हमेशा खुला · टोकन नहीं · OTP नहीं",
@@ -226,9 +230,13 @@ window.I18N = {
     scan: {
       camera: "कैमरा खोलो",
       stop: "कैमरा बंद",
+      paste: "QR पेस्ट करो",
+      pasteHint: "QR की तस्वीर कॉपी करो, फिर कहीं भी Ctrl+V / ⌘V दबाओ — फ़ाइल ढूँढने की ज़रूरत नहीं।",
+      pasted: "क्लिपबोर्ड से पढ़ लिया।",
+      noImage: "क्लिपबोर्ड पर तस्वीर नहीं है। QR कॉपी करके फिर पेस्ट करो।",
       file: "या QR की फ़ोटो चुनो / छोड़ो",
       result: "जो पढ़ा",
-      none: "इस फ़्रेम में QR नहीं मिला। स्थिर रखो, या सीधी फ़ोटो आज़माओ।"
+      none: "इस फ़्रेम में QR नहीं मिला। स्थिर रखो, सीधी फ़ोटो आज़माओ, या तस्वीर पेस्ट करो।"
     },
     utm: {
       intro: "एनालिटिक्स वाला टैग यहीं लगाओ। फिर काटो या स्टैम्प करो, ताकि पोस्टर पर लम्बी क्वेरी न दिखे।",
@@ -261,10 +269,148 @@ window.I18N = {
       q3: "कस्टम नाम कभी-कभी क्यों नहीं चलता?",
       a3: "चलता-फिरता शब्द अक्सर किसी और की पर्ची पर पहले से बैठा है। लम्बा नाम आज़माओ, या खाली छोड़ो — हम शांत सा चुन लेंगे।",
       q4: "GitHub Pages पर कैसे चढ़े?",
-      a4: "Repo Settings → Pages. या तो “GitHub Actions” (वर्कफ़्लो पड़ा है) या “Deploy from a branch” → main → / (root)। साइट सादा HTML/CSS/JS है।"
+      a4: "Settings → Pages → Deploy from a branch → main → / (root)। एक बार सेव। उसके बाद main पर हर push से काउंटर खुद live हो जाता है। अलग branch नहीं।"
     },
     footer: "एक छोटी यूटिलिटी डेस्क। स्टार्टअप नहीं, काउंटर जैसा।",
     lamp: "लैंप",
     day: "दिन"
+  },
+  ur: {
+    langName: "اردو",
+    pageTitle: "Devistic کاؤنٹر — URL کاٹو، QR اسٹیمپ",
+    shopKicker: "محلے کا کاؤنٹر",
+    title: "Devistic",
+    hours: "ہمیشہ کھلا · ٹوکن نہیں · OTP نہیں",
+    lede: "لمبا URL کاؤنٹر پر رکھو۔ ہم اسے <em>کاٹ</em> دیں گے، یا فون والا <em>QR اسٹیمپ</em> لگا دیں گے۔ اکاؤنٹ نہیں۔ واٹرمارک نہیں۔ ای میل سے انلاک والی بات نہیں۔",
+    token: "قطار نمبر: آپ پہلے سے ہی اگلے ہو۔",
+    tabs: {
+      cut: "URL کاٹو",
+      stamp: "QR اسٹیمپ",
+      scan: "اسکین پڑھو",
+      campaign: "UTM پرچی"
+    },
+    cut: {
+      url: "لمبا URL",
+      urlHint: "https://… پورا پیسٹ کرو، ٹریکنگ والی دم رکھنی ہو تو رہنے دو۔",
+      alias: "اپنا چھوٹا نام (اختیاری)",
+      aliasHint: "حروف، اعداد، ہائفن۔ پہلے TinyURL، پھر بیک اپ۔ نام لے لیا گیا ہو تو دوسرا آزمائیں گے۔",
+      provider: "کٹر",
+      auto: "آٹو (TinyURL، پھر بیک اپ)",
+      utmToggle: "کاٹنے سے پہلے کیمپین ٹیگ لگاؤ",
+      submit: "کاٹو",
+      desk: "ڈیسک ٹکٹ بھی بناؤ (یہ سائٹ)",
+      copied: "کلپ بورڈ پر آ گیا۔",
+      copy: "کاپی",
+      open: "کھولو",
+      stampToo: "اس کا QR اسٹیمپ",
+      fail: "جتنے کٹر تھے، سب نے سر ہلایا۔ URL چیک کرو، یا نیچے ڈیسک ٹکٹ لو۔",
+      bad: "یہ ابھی ویب پتے جیسا نہیں لگ رہا۔",
+      unsafe: "javascript: / data: / file: لنک نہیں کاٹیں گے۔"
+    },
+    stamp: {
+      type: "مربع میں کیا جائے گا؟",
+      types: {
+        url: "URL",
+        text: "سادہ متن",
+        wifi: "وائی فائی",
+        vcard: "وزٹنگ کارڈ",
+        email: "ای میل",
+        sms: "SMS",
+        whatsapp: "WhatsApp",
+        phone: "فون",
+        geo: "لوکیشن",
+        upi: "UPI ادائیگی",
+        event: "کیلنڈر ایونٹ"
+      },
+      data: "متن یا URL",
+      ssid: "نیٹ ورک نام (SSID)",
+      wifiPass: "پاس ورڈ",
+      wifiType: "سیکیورٹی",
+      hidden: "چھپا نیٹ ورک",
+      fn: "پورا نام",
+      org: "کمپنی",
+      tel: "فون",
+      mail: "ای میل",
+      site: "ویب سائٹ",
+      subject: "موضوع",
+      body: "پیغام",
+      waNum: "WhatsApp نمبر",
+      waNumHint: "ملک کا کوڈ، پلس نہیں۔ جیسے: 9198XXXXXXXX",
+      lat: "عرض بلد",
+      lng: "طول بلد",
+      pa: "UPI ID",
+      pn: "نام",
+      am: "رقم (اختیاری)",
+      tn: "نوٹ (اختیاری)",
+      summary: "ایونٹ عنوان",
+      when: "شروع",
+      ends: "ختم",
+      loc: "جگہ",
+      ink: "سیاہی",
+      paper: "کاغذ",
+      size: "سائز",
+      dots: "ماڈیول شکل",
+      logo: "بیچ کا نشان (لوگو)",
+      logoHint: "مربع کے ~30٪ سے چھوٹا رکھو۔ لوگو پر error correction خود بڑھ جاتا ہے۔",
+      clearLogo: "نشان ہٹاؤ",
+      ecc: "Error correction",
+      caption: "اسٹیمپ کے نیچے لیبل",
+      captionPh: "SCAN ME · مینو",
+      download: "ڈاؤن لوڈ",
+      png: "PNG",
+      svg: "SVG",
+      jpg: "JPG",
+      copyImg: "تصویر کاپی",
+      print: "پرنٹ",
+      contrast: "سیاہی اور کاغذ میں فرق کم ہے۔ گہری سیاہی، ہلکا کاغذ بہتر اسکین ہوتا ہے۔",
+      submit: "اسٹیمپ لگاؤ"
+    },
+    scan: {
+      camera: "کیمرہ کھولو",
+      stop: "کیمرہ بند",
+      paste: "QR پیسٹ کرو",
+      pasteHint: "QR کی تصویر کاپی کرو، پھر کہیں بھی Ctrl+V / ⌘V دباؤ — فائل ڈھونڈنے کی ضرورت نہیں۔",
+      pasted: "کلپ بورڈ سے پڑھ لیا۔",
+      noImage: "کلپ بورڈ پر تصویر نہیں ہے۔ QR کاپی کر کے پھر پیسٹ کرو۔",
+      file: "یا QR کی فوٹو چنو / چھوڑو",
+      result: "جو پڑھا",
+      none: "اس فریم میں QR نہیں ملا۔ ٹھہرو، سیدھی فوٹو آزماؤ، یا تصویر پیسٹ کرو۔"
+    },
+    utm: {
+      intro: "اینالیٹکس والا ٹیگ یہیں لگاؤ۔ پھر کاٹو یا اسٹیمپ کرو، تاکہ پوسٹر پر لمبی کوئری نہ دکھے۔",
+      source: "utm_source",
+      medium: "utm_medium",
+      campaign: "utm_campaign",
+      content: "utm_content",
+      term: "utm_term",
+      preview: "ٹیگ والا URL",
+      apply: "کاؤنٹر پر استعمال کرو",
+      presets: "تیار پرچیاں"
+    },
+    slip: {
+      ticket: "کاؤنٹر پرچی",
+      empty: "بلاٹر ابھی خالی ہے۔\nبائیں کچھ چپکاؤ۔",
+      via: "کٹا"
+    },
+    history: {
+      title: "حالیہ کام (صرف اس براؤزر میں)",
+      empty: "رسید رول خالی ہے۔ ٹھیک ہے — آپ کے لنکس کی کلاؤڈ کاپی ہم نہیں رکھتے۔",
+      clear: "رول پھاڑو",
+      export: "JSON نکالو"
+    },
+    faq: {
+      title: "چھوٹی سی شرط",
+      q1: "میرا ڈیٹا کہاں جاتا ہے؟",
+      a1: "QR، وائی فائی پاس ورڈ، vCard، UPI — سب آپ کے براؤزر میں بنتے ہیں۔ یہ سائٹ GitHub Pages کا سٹیٹک کاؤنٹر ہے، ہمارا سرور نہیں۔ URL کاٹنا الگ بات ہے: TinyURL (یا بیک اپ) کو لمبا پتہ سننا پڑتا ہے، تبھی ری ڈائریکٹ چلے گا۔",
+      q2: "QR ایکسپائر ہوگا؟",
+      a2: "سٹیٹک اسٹیمپ ایکسپائر نہیں ہوتا۔ جو تصویر میں لکھا ہے، وہی رہتا ہے۔ اگر شارٹ URL اسٹیمپ کیا ہے، تو کٹر ری ڈائریکٹ رکھے گا تبھی چلے گا۔",
+      q3: "کسٹم نام کبھی کبھی کیوں نہیں چلتا؟",
+      a3: "چلتا پھرتا لفظ اکثر کسی اور کی پرچی پر پہلے سے بیٹھا ہے۔ لمبا نام آزماؤ، یا خالی چھوڑو — ہم خاموش سا چن لیں گے۔",
+      q4: "GitHub Pages پر کیسے چڑھے؟",
+      a4: "Settings → Pages → Deploy from a branch → main → / (root)۔ ایک بار سیو۔ اس کے بعد main پر ہر push سے کاؤنٹر خود live ہو جاتا ہے۔ الگ برانچ نہیں।"
+    },
+    footer: "ایک چھوٹی یوٹیلٹی ڈیسک۔ اسٹارٹ اپ نہیں، کاؤنٹر جیسا۔",
+    lamp: "لیمپ",
+    day: "دن"
   }
 };

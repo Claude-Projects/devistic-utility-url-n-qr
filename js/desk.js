@@ -46,10 +46,14 @@
     $all("[data-i-aria]").forEach(function (el) {
       el.setAttribute("aria-label", t(el.getAttribute("data-i-aria")));
     });
-    $("#langBtn").textContent = dict().otherLang;
     $("#lampBtn").textContent = document.documentElement.getAttribute("data-theme") === "lamp" ? dict().day : dict().lamp;
-    document.documentElement.lang = lang() === "hi" ? "hi" : "en";
-    document.title = lang() === "hi" ? "Devistic काउंटर — URL काटो, QR स्टैम्प" : "Devistic Counter — cut URLs, stamp QR codes";
+    var loc = lang();
+    document.documentElement.lang = loc === "hi" ? "hi" : loc === "ur" ? "ur" : "en";
+    document.documentElement.dir = loc === "ur" ? "rtl" : "ltr";
+    document.title = t("pageTitle");
+    $all("[data-set-lang]").forEach(function (btn) {
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-set-lang") === loc ? "true" : "false");
+    });
     fillTypeOptions();
     renderHistory();
   }
@@ -500,20 +504,124 @@
   }
 
   function decodeFromCanvas(canvas) {
+    if (!window.jsQR) return null;
     var ctx = canvas.getContext("2d");
     var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    if (!window.jsQR) return null;
     var code = jsQR(img.data, img.width, img.height, { inversionAttempts: "attemptBoth" });
     return code ? code.data : null;
   }
 
-  function showScan(text) {
+  function decodeImageElement(img) {
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    var w = img.naturalWidth || img.width;
+    var h = img.naturalHeight || img.height;
+    if (!w || !h) return null;
+    var scales = [1, 2, 3, 0.75, 0.5];
+    if (w < 220 || h < 220) scales = [3, 4, 2, 1];
+    for (var i = 0; i < scales.length; i++) {
+      canvas.width = Math.max(1, Math.round(w * scales[i]));
+      canvas.height = Math.max(1, Math.round(h * scales[i]));
+      ctx.imageSmoothingEnabled = scales[i] !== 1;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      var data = decodeFromCanvas(canvas);
+      if (data) return data;
+    }
+    return null;
+  }
+
+  function showScan(text, meta) {
     $("#scanOut").hidden = !text;
     $("#scanOut").textContent = text || "";
-    setStatus("#scanStatus", text ? "" : t("scan.none"), text ? "ok" : "warn");
+    var msg = "";
+    var kind = "warn";
+    if (text) {
+      msg = meta === "paste" ? t("scan.pasted") : "";
+      kind = "ok";
+    } else {
+      msg = t("scan.none");
+    }
+    setStatus("#scanStatus", msg, kind);
     if (text && /^https?:\/\//i.test(text)) {
       $("#qrData").value = text;
     }
+  }
+
+  var lastPreviewUrl = "";
+
+  function setScanPreview(url) {
+    var prev = $("#scanPreview");
+    if (!prev) return;
+    if (lastPreviewUrl && lastPreviewUrl !== url) URL.revokeObjectURL(lastPreviewUrl);
+    lastPreviewUrl = url || "";
+    if (url) {
+      prev.src = url;
+      prev.hidden = false;
+    } else {
+      prev.removeAttribute("src");
+      prev.hidden = true;
+    }
+  }
+
+  function ingestQrFile(file, source) {
+    if (!file) return;
+    selectTab("scan");
+    var url = URL.createObjectURL(file);
+    setScanPreview(url);
+    var img = new Image();
+    img.onload = function () {
+      showScan(decodeImageElement(img), source);
+    };
+    img.onerror = function () {
+      showScan(null);
+    };
+    img.src = url;
+  }
+
+  function clipboardImage(e) {
+    var cd = e.clipboardData;
+    if (!cd) return null;
+    var i;
+    if (cd.files && cd.files.length) {
+      for (i = 0; i < cd.files.length; i++) {
+        if ((cd.files[i].type || "").indexOf("image/") === 0) return cd.files[i];
+      }
+    }
+    if (cd.items) {
+      for (i = 0; i < cd.items.length; i++) {
+        if ((cd.items[i].type || "").indexOf("image/") === 0) return cd.items[i].getAsFile();
+      }
+    }
+    return null;
+  }
+
+  async function pasteFromClipboardButton() {
+    if (navigator.clipboard && navigator.clipboard.read) {
+      try {
+        var items = await navigator.clipboard.read();
+        for (var i = 0; i < items.length; i++) {
+          var types = items[i].types || [];
+          var imgType = null;
+          for (var k = 0; k < types.length; k++) {
+            if (types[k].indexOf("image/") === 0) imgType = types[k];
+          }
+          if (imgType) {
+            var blob = await items[i].getType(imgType);
+            ingestQrFile(new File([blob], "clipboard.png", { type: imgType }), "paste");
+            return;
+          }
+        }
+        setStatus("#scanStatus", t("scan.noImage"), "warn");
+        selectTab("scan");
+        return;
+      } catch (err) {
+        setStatus("#scanStatus", t("scan.pasteHint"), "warn");
+        selectTab("scan");
+        return;
+      }
+    }
+    setStatus("#scanStatus", t("scan.pasteHint"), "warn");
+    selectTab("scan");
   }
 
   function stopScan() {
@@ -563,27 +671,20 @@
   }
 
   function readFileQr(file) {
-    var img = new Image();
-    img.onload = function () {
-      var canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      canvas.getContext("2d").drawImage(img, 0, 0);
-      showScan(decodeFromCanvas(canvas));
-      URL.revokeObjectURL(img.src);
-    };
-    img.src = URL.createObjectURL(file);
+    ingestQrFile(file);
   }
 
   function bind() {
     $all(".tab").forEach(function (btn) {
       btn.addEventListener("click", function () { selectTab(btn.getAttribute("data-tab")); });
     });
-    $("#langBtn").addEventListener("click", function () {
-      var next = lang() === "en" ? "hi" : "en";
-      document.documentElement.setAttribute("data-lang", next);
-      localStorage.setItem(STORAGE_LANG, next);
-      applyI18n();
+    $all("[data-set-lang]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var next = btn.getAttribute("data-set-lang");
+        document.documentElement.setAttribute("data-lang", next);
+        localStorage.setItem(STORAGE_LANG, next);
+        applyI18n();
+      });
     });
     $("#lampBtn").addEventListener("click", function () {
       var on = document.documentElement.getAttribute("data-theme") === "lamp";
@@ -639,15 +740,22 @@
     $("#printQr").addEventListener("click", function () { window.print(); });
     $("#scanStart").addEventListener("click", startScan);
     $("#scanStop").addEventListener("click", stopScan);
+    $("#scanPaste").addEventListener("click", pasteFromClipboardButton);
     $("#scanFile").addEventListener("change", function (e) {
-      if (e.target.files[0]) readFileQr(e.target.files[0]);
+      if (e.target.files[0]) ingestQrFile(e.target.files[0]);
     });
     var drop = $("#fileDrop");
     drop.addEventListener("dragover", function (e) { e.preventDefault(); });
     drop.addEventListener("drop", function (e) {
       e.preventDefault();
       var f = e.dataTransfer.files && e.dataTransfer.files[0];
-      if (f) readFileQr(f);
+      if (f) ingestQrFile(f);
+    });
+    document.addEventListener("paste", function (e) {
+      var file = clipboardImage(e);
+      if (!file) return;
+      e.preventDefault();
+      ingestQrFile(file, "paste");
     });
     ["utmBase", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (id) {
       $("#" + id).addEventListener("input", refreshUtm);
@@ -686,7 +794,7 @@
 
   function boot() {
     var savedLang = localStorage.getItem(STORAGE_LANG);
-    if (savedLang === "hi" || savedLang === "en") document.documentElement.setAttribute("data-lang", savedLang);
+    if (savedLang === "hi" || savedLang === "en" || savedLang === "ur") document.documentElement.setAttribute("data-lang", savedLang);
     var savedTheme = localStorage.getItem(STORAGE_THEME);
     if (savedTheme === "lamp") document.documentElement.setAttribute("data-theme", "lamp");
     else document.documentElement.setAttribute("data-theme", "day");

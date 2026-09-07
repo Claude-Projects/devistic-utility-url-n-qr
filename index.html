@@ -10,7 +10,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Karla:wght@400;700;800&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/desk.css">
 </head>
 <body>
@@ -37,7 +37,11 @@
       </a>
       <div class="tools">
         <p class="hours" data-i="hours">Open always · No token · No OTP</p>
-        <button type="button" class="lang-btn" id="langBtn">हिन्दी</button>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" class="lang-btn" data-set-lang="en" aria-pressed="true">EN</button>
+          <button type="button" class="lang-btn" data-set-lang="hi" aria-pressed="false">हिन्दी</button>
+          <button type="button" class="lang-btn" data-set-lang="ur" aria-pressed="false">اردو</button>
+        </div>
         <button type="button" class="lang-btn" id="lampBtn" data-i="lamp">Lamp</button>
       </div>
     </div>
@@ -59,14 +63,14 @@
           <div class="row">
             <label>
               <span class="kicker" data-i="cut.url">Long URL</span>
-              <input id="cutUrl" type="text" inputmode="url" required placeholder="https://www.example.com/this/goes/on/forever">
+              <input id="cutUrl" type="text" inputmode="url" dir="ltr" required placeholder="https://www.example.com/this/goes/on/forever">
               <span class="hint" data-i="cut.urlHint">https://… paste the whole thing.</span>
             </label>
           </div>
           <div class="row split">
             <label>
               <span class="kicker" data-i="cut.alias">Custom ending (optional)</span>
-              <input id="cutAlias" type="text" maxlength="40" placeholder="summer-menu">
+              <input id="cutAlias" type="text" maxlength="40" dir="ltr" placeholder="summer-menu">
               <span class="hint" data-i="cut.aliasHint">Letters, numbers, hyphen.</span>
             </label>
             <label>
@@ -96,7 +100,7 @@
             <button class="btn ghost" id="stampFromCut" type="button" data-i="cut.stampToo">Stamp a QR of this</button>
           </div>
           <p class="status" id="cutStatus" hidden></p>
-          <p class="short-out" id="deskOut" hidden></p>
+          <p class="short-out" id="deskOut" hidden dir="ltr"></p>
           <button class="btn ghost" id="copyDesk" type="button" hidden data-i="cut.copy">Copy</button>
         </form>
 
@@ -108,7 +112,7 @@
             </label>
             <label data-for="url text">
               <span class="kicker" data-i="stamp.data">Text or URL</span>
-              <input id="qrData" type="text" placeholder="https:// or any text">
+              <input id="qrData" type="text" dir="ltr" placeholder="https:// or any text">
             </label>
           </div>
 
@@ -244,17 +248,20 @@
         </form>
 
         <div class="panel" id="panel-scan" hidden>
+          <p class="tiny" data-i="scan.pasteHint">Copy a QR, then press Ctrl+V / ⌘V anywhere on this desk.</p>
           <div class="actions">
             <button class="btn primary" type="button" id="scanStart" data-i="scan.camera">Open camera</button>
             <button class="btn" type="button" id="scanStop" hidden data-i="scan.stop">Close camera</button>
+            <button class="btn" type="button" id="scanPaste" data-i="scan.paste">Paste QR</button>
           </div>
           <video id="scanVideo" class="scan-video" playsinline hidden></video>
+          <img id="scanPreview" class="scan-preview" alt="" hidden>
           <div class="file-drop" id="fileDrop" style="margin-top:12px">
             <p class="kicker" data-i="scan.file">Or drop / pick a photo of a QR</p>
             <input id="scanFile" type="file" accept="image/*">
           </div>
           <p class="kicker" style="margin-top:14px" data-i="scan.result">What we read</p>
-          <p class="short-out" id="scanOut" hidden></p>
+          <p class="short-out" id="scanOut" hidden dir="ltr"></p>
           <p class="status" id="scanStatus" hidden></p>
         </div>
 
@@ -263,7 +270,7 @@
           <div class="row">
             <label>
               <span class="kicker">URL</span>
-              <input id="utmBase" type="text" inputmode="url" placeholder="https://yoursite.com/offer">
+              <input id="utmBase" type="text" inputmode="url" dir="ltr" placeholder="https://yoursite.com/offer">
             </label>
           </div>
           <p class="kicker" data-i="utm.presets">Quick slips</p>
@@ -283,7 +290,7 @@
           </div>
           <label>
             <span class="kicker" data-i="utm.preview">Tagged URL</span>
-            <textarea id="utmPreview" readonly></textarea>
+            <textarea id="utmPreview" readonly dir="ltr"></textarea>
           </label>
           <div class="actions">
             <button class="btn primary" type="button" id="utmApply" data-i="utm.apply">Use this on the counter</button>
@@ -301,7 +308,7 @@
           <div class="qr-stage" id="qrStage"></div>
           <p class="qr-caption" id="qrCaptionOut" hidden></p>
         </div>
-        <p class="short-out" id="shortOut" hidden></p>
+        <p class="short-out" id="shortOut" hidden dir="ltr"></p>
       </aside>
     </div>
   </main>
