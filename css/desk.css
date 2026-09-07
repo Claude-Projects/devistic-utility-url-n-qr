@@ -480,6 +480,7 @@ textarea:focus {
   background: color-mix(in srgb, var(--desk) 12%, var(--paper));
 }
 
+[hidden],
 .hidden { display: none !important; }
 
 /* —— Paper slip / result —— */
