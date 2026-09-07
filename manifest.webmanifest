@@ -1,0 +1,19 @@
+{
+  "name": "Devistic Counter — cut URLs, stamp QR codes",
+  "short_name": "Devistic",
+  "description": "No-signup URL shortener and QR workshop. Cut long links, stamp Wi-Fi, vCard, UPI, and download PNG, SVG, or JPG.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eadfcb",
+  "theme_color": "#24382f",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

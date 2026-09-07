@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-theme="day">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Devistic Counter — cut URLs, stamp QR codes</title>
+  <meta name="description" content="No-signup URL shortener and QR workshop. TinyURL-style cutting, custom colors, logos, Wi-Fi, vCard, UPI. Download PNG, SVG, or JPG. Runs on GitHub Pages.">
+  <meta name="theme-color" content="#24382f">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/desk.css">
+</head>
+<body>
+  <a class="skip" href="#counter">Skip to the counter</a>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="sign wrap">
+    <div class="sign-bar">
+      <a class="brand" href="./">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="currentColor">
+            <rect x="8" y="8" width="16" height="16"/>
+            <rect x="40" y="8" width="16" height="16"/>
+            <rect x="8" y="40" width="16" height="16"/>
+            <rect x="30" y="12" width="6" height="6"/>
+            <rect x="30" y="28" width="14" height="14"/>
+            <rect x="18" y="30" width="6" height="6"/>
+            <rect x="48" y="30" width="6" height="6"/>
+            <rect x="30" y="46" width="6" height="6"/>
+            <rect x="48" y="46" width="6" height="6"/>
+          </svg>
+        </span>
+        <h1 class="brand-name"><span data-i="shopKicker">Neighborhood counter</span>Devistic</h1>
+      </a>
+      <div class="tools">
+        <p class="hours" data-i="hours">Open always · No token · No OTP</p>
+        <button type="button" class="lang-btn" id="langBtn">हिन्दी</button>
+        <button type="button" class="lang-btn" id="lampBtn" data-i="lamp">Lamp</button>
+      </div>
+    </div>
+    <p class="lede" data-i="lede" data-i-html="1">Drop a long URL on the counter. We’ll <em>cut</em> it, or <em>stamp</em> a square that phones can read. No account. No watermark. No “unlock with email”.</p>
+    <p class="token" data-i="token">Queue number: you’re already next.</p>
+  </header>
+
+  <main class="desk wrap" id="counter">
+    <div class="desk-grid">
+      <section class="counter">
+        <div class="tabs" role="tablist">
+          <button class="tab" type="button" role="tab" data-tab="cut" aria-selected="true" data-i="tabs.cut">Cut a URL</button>
+          <button class="tab" type="button" role="tab" data-tab="stamp" aria-selected="false" data-i="tabs.stamp">Stamp a QR</button>
+          <button class="tab" type="button" role="tab" data-tab="scan" aria-selected="false" data-i="tabs.scan">Read a scan</button>
+          <button class="tab" type="button" role="tab" data-tab="campaign" aria-selected="false" data-i="tabs.campaign">UTM slip</button>
+        </div>
+
+        <form class="panel" id="panel-cut" autocomplete="off">
+          <div class="row">
+            <label>
+              <span class="kicker" data-i="cut.url">Long URL</span>
+              <input id="cutUrl" type="text" inputmode="url" required placeholder="https://www.example.com/this/goes/on/forever">
+              <span class="hint" data-i="cut.urlHint">https://… paste the whole thing.</span>
+            </label>
+          </div>
+          <div class="row split">
+            <label>
+              <span class="kicker" data-i="cut.alias">Custom ending (optional)</span>
+              <input id="cutAlias" type="text" maxlength="40" placeholder="summer-menu">
+              <span class="hint" data-i="cut.aliasHint">Letters, numbers, hyphen.</span>
+            </label>
+            <label>
+              <span class="kicker" data-i="cut.provider">Cutter</span>
+              <select id="cutProvider">
+                <option value="auto" selected data-i="cut.auto">Auto (TinyURL, then backups)</option>
+                <option value="tinyurl">TinyURL</option>
+                <option value="isgd">is.gd</option>
+                <option value="zip1">zip1.io</option>
+                <option value="spoo">spoo.me</option>
+                <option value="dagd">da.gd</option>
+              </select>
+            </label>
+          </div>
+          <label class="tiny">
+            <input type="checkbox" id="cutUtm">
+            <span data-i="cut.utmToggle">Add campaign tags before cutting</span>
+          </label>
+          <label class="tiny">
+            <input type="checkbox" id="cutDesk">
+            <span data-i="cut.desk">Also make a desk ticket (this site)</span>
+          </label>
+          <div class="actions">
+            <button class="btn primary" id="cutBtn" type="submit" data-i="cut.submit">Cut it</button>
+            <button class="btn" id="copyShort" type="button" data-i="cut.copy">Copy</button>
+            <button class="btn ghost" id="openShort" type="button" data-i="cut.open">Open</button>
+            <button class="btn ghost" id="stampFromCut" type="button" data-i="cut.stampToo">Stamp a QR of this</button>
+          </div>
+          <p class="status" id="cutStatus" hidden></p>
+          <p class="short-out" id="deskOut" hidden></p>
+          <button class="btn ghost" id="copyDesk" type="button" hidden data-i="cut.copy">Copy</button>
+        </form>
+
+        <form class="panel" id="panel-stamp" hidden>
+          <div class="row split">
+            <label>
+              <span class="kicker" data-i="stamp.type">What’s going in the square?</span>
+              <select id="qrType"></select>
+            </label>
+            <label data-for="url text">
+              <span class="kicker" data-i="stamp.data">Text or URL</span>
+              <input id="qrData" type="text" placeholder="https:// or any text">
+            </label>
+          </div>
+
+          <div class="row split" data-for="wifi">
+            <label>
+              <span class="kicker" data-i="stamp.ssid">Network name (SSID)</span>
+              <input id="wifiSsid" type="text">
+            </label>
+            <label>
+              <span class="kicker" data-i="stamp.wifiPass">Password</span>
+              <input id="wifiPass" type="text">
+            </label>
+            <label>
+              <span class="kicker" data-i="stamp.wifiType">Security</span>
+              <select id="wifiType">
+                <option value="WPA">WPA/WPA2</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">Open</option>
+              </select>
+            </label>
+            <label class="tiny"><input type="checkbox" id="wifiHidden"> <span data-i="stamp.hidden">Hidden network</span></label>
+          </div>
+
+          <div class="row split" data-for="vcard">
+            <label><span class="kicker" data-i="stamp.fn">Full name</span><input id="vcFn" type="text"></label>
+            <label><span class="kicker" data-i="stamp.org">Company</span><input id="vcOrg" type="text"></label>
+            <label><span class="kicker" data-i="stamp.tel">Phone</span><input id="vcTel" type="tel"></label>
+            <label><span class="kicker" data-i="stamp.mail">Email</span><input id="vcEmail" type="email"></label>
+            <label><span class="kicker" data-i="stamp.site">Website</span><input id="vcUrl" type="url"></label>
+          </div>
+
+          <div class="row" data-for="email">
+            <label><span class="kicker" data-i="stamp.mail">Email</span><input id="emTo" type="email"></label>
+            <label><span class="kicker" data-i="stamp.subject">Subject</span><input id="emSub" type="text"></label>
+            <label><span class="kicker" data-i="stamp.body">Message</span><textarea id="emBody"></textarea></label>
+          </div>
+
+          <div class="row split" data-for="sms">
+            <label><span class="kicker" data-i="stamp.tel">Phone</span><input id="smsTo" type="tel"></label>
+            <label><span class="kicker" data-i="stamp.body">Message</span><input id="smsBody" type="text"></label>
+          </div>
+
+          <div class="row split" data-for="whatsapp">
+            <label>
+              <span class="kicker" data-i="stamp.waNum">WhatsApp number</span>
+              <input id="waNum" type="tel" placeholder="9198XXXXXXXX">
+              <span class="hint" data-i="stamp.waNumHint">Country code, no plus.</span>
+            </label>
+            <label><span class="kicker" data-i="stamp.body">Message</span><input id="waBody" type="text"></label>
+          </div>
+
+          <div class="row" data-for="phone">
+            <label><span class="kicker" data-i="stamp.tel">Phone</span><input id="phoneTo" type="tel"></label>
+          </div>
+
+          <div class="row split" data-for="geo">
+            <label><span class="kicker" data-i="stamp.lat">Latitude</span><input id="geoLat" type="text" placeholder="19.0760"></label>
+            <label><span class="kicker" data-i="stamp.lng">Longitude</span><input id="geoLng" type="text" placeholder="72.8777"></label>
+          </div>
+
+          <div class="row split" data-for="upi">
+            <label><span class="kicker" data-i="stamp.pa">UPI ID</span><input id="upiPa" type="text" placeholder="name@upi"></label>
+            <label><span class="kicker" data-i="stamp.pn">Payee name</span><input id="upiPn" type="text"></label>
+            <label><span class="kicker" data-i="stamp.am">Amount</span><input id="upiAm" type="number" min="1" step="0.01"></label>
+            <label><span class="kicker" data-i="stamp.tn">Note</span><input id="upiTn" type="text"></label>
+          </div>
+
+          <div class="row split" data-for="event">
+            <label><span class="kicker" data-i="stamp.summary">Event title</span><input id="evSum" type="text"></label>
+            <label><span class="kicker" data-i="stamp.when">Starts</span><input id="evStart" type="datetime-local"></label>
+            <label><span class="kicker" data-i="stamp.ends">Ends</span><input id="evEnd" type="datetime-local"></label>
+            <label><span class="kicker" data-i="stamp.loc">Place</span><input id="evLoc" type="text"></label>
+          </div>
+
+          <div class="row split">
+            <label>
+              <span class="kicker" data-i="stamp.ink">Ink</span>
+              <span class="swatches"><input id="qrInk" type="color" value="#1c1612"></span>
+            </label>
+            <label>
+              <span class="kicker" data-i="stamp.paper">Paper</span>
+              <span class="swatches"><input id="qrPaper" type="color" value="#faf4e8"></span>
+            </label>
+            <label>
+              <span class="kicker" data-i="stamp.size">Size</span>
+              <span class="range">
+                <input id="qrSize" type="range" min="180" max="1024" value="280">
+                <span class="tiny">px</span>
+              </span>
+            </label>
+            <label>
+              <span class="kicker" data-i="stamp.dots">Module shape</span>
+              <select id="qrDots">
+                <option value="square">Square</option>
+                <option value="rounded" selected>Rounded</option>
+                <option value="dots">Dots</option>
+                <option value="classy">Classy</option>
+                <option value="classy-rounded">Classy rounded</option>
+                <option value="extra-rounded">Extra rounded</option>
+              </select>
+            </label>
+            <label>
+              <span class="kicker" data-i="stamp.ecc">Error correction</span>
+              <select id="qrEcc">
+                <option value="L">L · 7%</option>
+                <option value="M" selected>M · 15%</option>
+                <option value="Q">Q · 25%</option>
+                <option value="H">H · 30%</option>
+              </select>
+            </label>
+            <label>
+              <span class="kicker" data-i="stamp.caption">Label under the stamp</span>
+              <input id="qrCaption" type="text" data-i-ph="stamp.captionPh">
+            </label>
+          </div>
+          <div class="row">
+            <label>
+              <span class="kicker" data-i="stamp.logo">Center mark (logo)</span>
+              <input id="qrLogo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+              <span class="hint" data-i="stamp.logoHint">Keep it modest.</span>
+            </label>
+            <button class="btn ghost" type="button" id="clearLogo" data-i="stamp.clearLogo">Remove mark</button>
+          </div>
+          <p class="warn" id="contrastWarn" hidden data-i="stamp.contrast">Contrast warning</p>
+          <div class="actions">
+            <button class="btn primary" type="submit" data-i="stamp.submit">Stamp it</button>
+            <button class="btn" type="button" id="dlPng" data-i="stamp.png">PNG</button>
+            <button class="btn" type="button" id="dlSvg" data-i="stamp.svg">SVG</button>
+            <button class="btn" type="button" id="dlJpg" data-i="stamp.jpg">JPG</button>
+            <button class="btn ghost" type="button" id="copyImg" data-i="stamp.copyImg">Copy image</button>
+            <button class="btn ghost" type="button" id="printQr" data-i="stamp.print">Print</button>
+          </div>
+        </form>
+
+        <div class="panel" id="panel-scan" hidden>
+          <div class="actions">
+            <button class="btn primary" type="button" id="scanStart" data-i="scan.camera">Open camera</button>
+            <button class="btn" type="button" id="scanStop" hidden data-i="scan.stop">Close camera</button>
+          </div>
+          <video id="scanVideo" class="scan-video" playsinline hidden></video>
+          <div class="file-drop" id="fileDrop" style="margin-top:12px">
+            <p class="kicker" data-i="scan.file">Or drop / pick a photo of a QR</p>
+            <input id="scanFile" type="file" accept="image/*">
+          </div>
+          <p class="kicker" style="margin-top:14px" data-i="scan.result">What we read</p>
+          <p class="short-out" id="scanOut" hidden></p>
+          <p class="status" id="scanStatus" hidden></p>
+        </div>
+
+        <div class="panel" id="panel-campaign" hidden>
+          <p class="tiny" data-i="utm.intro">Tag a link for analytics, then cut or stamp it.</p>
+          <div class="row">
+            <label>
+              <span class="kicker">URL</span>
+              <input id="utmBase" type="text" inputmode="url" placeholder="https://yoursite.com/offer">
+            </label>
+          </div>
+          <p class="kicker" data-i="utm.presets">Quick slips</p>
+          <div class="chips" style="margin-bottom:12px">
+            <button class="chip" type="button" data-preset="instagram|social|spring-poster">Instagram</button>
+            <button class="chip" type="button" data-preset="whatsapp|social|invite">WhatsApp</button>
+            <button class="chip" type="button" data-preset="newsletter|email|march">Email</button>
+            <button class="chip" type="button" data-preset="qr|offline|shop-window">Poster / QR</button>
+            <button class="chip" type="button" data-preset="google|cpc|brand">Google ads</button>
+          </div>
+          <div class="row split">
+            <label><span class="kicker" data-i="utm.source">utm_source</span><input id="utm_source" type="text"></label>
+            <label><span class="kicker" data-i="utm.medium">utm_medium</span><input id="utm_medium" type="text"></label>
+            <label><span class="kicker" data-i="utm.campaign">utm_campaign</span><input id="utm_campaign" type="text"></label>
+            <label><span class="kicker" data-i="utm.content">utm_content</span><input id="utm_content" type="text"></label>
+            <label><span class="kicker" data-i="utm.term">utm_term</span><input id="utm_term" type="text"></label>
+          </div>
+          <label>
+            <span class="kicker" data-i="utm.preview">Tagged URL</span>
+            <textarea id="utmPreview" readonly></textarea>
+          </label>
+          <div class="actions">
+            <button class="btn primary" type="button" id="utmApply" data-i="utm.apply">Use this on the counter</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="slip" aria-live="polite">
+        <div class="slip-head">
+          <span data-i="slip.ticket">Counter slip</span>
+          <span id="shortVia"></span>
+        </div>
+        <p class="empty-slip" id="emptySlip" data-i="slip.empty">Nothing on the blotter yet.</p>
+        <div id="qrWrap" hidden>
+          <div class="qr-stage" id="qrStage"></div>
+          <p class="qr-caption" id="qrCaptionOut" hidden></p>
+        </div>
+        <p class="short-out" id="shortOut" hidden></p>
+      </aside>
+    </div>
+  </main>
+
+  <section class="receipts">
+    <h2 data-i="history.title">Recent work (this browser only)</h2>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="clearLog" data-i="history.clear">Tear the roll</button>
+      <button class="btn ghost" type="button" id="exportLog" data-i="history.export">Export JSON</button>
+    </div>
+    <p class="tiny" id="historyEmpty" data-i="history.empty">The receipt roll is blank.</p>
+    <ul class="receipt-list" id="receiptList"></ul>
+  </section>
+
+  <footer>
+    <h2 data-i="faq.title">The small print</h2>
+    <div class="faq">
+      <details open>
+        <summary data-i="faq.q1">Where does my data go?</summary>
+        <p data-i="faq.a1"></p>
+      </details>
+      <details>
+        <summary data-i="faq.q2">Will the QR expire?</summary>
+        <p data-i="faq.a2"></p>
+      </details>
+      <details>
+        <summary data-i="faq.q3">Why a custom ending sometimes fails?</summary>
+        <p data-i="faq.a3"></p>
+      </details>
+      <details>
+        <summary data-i="faq.q4">How do I put this on GitHub Pages?</summary>
+        <p data-i="faq.a4"></p>
+      </details>
+    </div>
+    <p style="margin-top:18px"><span data-i="footer">A little utility desk.</span> · <span id="year"></span></p>
+  </footer>
+
+  <script src="./vendor/qr-code-styling.js"></script>
+  <script src="./vendor/jsQR.js"></script>
+  <script src="./js/i18n.js"></script>
+  <script src="./js/desk.js"></script>
+</body>
+</html>
